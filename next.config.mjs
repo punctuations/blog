@@ -8,6 +8,9 @@ import withPWAInit from "@ducanh2912/next-pwa";
 
 import * as fs from "fs";
 
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
 /** @type {import('rehype-pretty-code').Options} */
 const options = {
 	theme: JSON.parse(fs.readFileSync(`${process.cwd()}/src/helpers/dark-default.json`, "utf8")),
@@ -53,10 +56,10 @@ const nextConfig = {
 			exclude: config.exclude,
 			use: [
 				{
-					loader: import.meta.resolve("url-loader"),
+					loader: require.resolve("url-loader"),
 					options: {
 						limit: config.inlineImageLimit,
-						fallback: import.meta.resolve("file-loader"),
+						fallback: require.resolve("file-loader"),
 						publicPath: `${config.assetPrefix}/_next/static/images/`,
 						outputPath: `${isServer ? "../" : ""}static/images/`,
 						name: "[name]-[hash].[ext]",
