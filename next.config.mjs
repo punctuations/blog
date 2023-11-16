@@ -8,9 +8,6 @@ import withPWAInit from "@ducanh2912/next-pwa";
 
 import * as fs from "fs";
 
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-
 /** @type {import('rehype-pretty-code').Options} */
 const options = {
 	theme: JSON.parse(fs.readFileSync(`${process.cwd()}/src/helpers/dark-default.json`, "utf8")),
@@ -34,7 +31,7 @@ const withBundleAnalyzer = bundler({
  */
 const withPWA = withPWAInit({
 	dest: "public",
-	disable: process.env.NODE_ENV === "development",
+	// disable: process.env.NODE_ENV === "development",
 });
 
 const nextConfig = {
