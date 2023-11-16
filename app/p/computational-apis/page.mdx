@@ -1,0 +1,32 @@
+import '@/styles/extended.css';
+import '@/global.css';
+import '@/p/post.css';
+
+import Posts from "@/components/dom/articles";
+import Header from '@/components/blog/Header';
+
+export const meta = {
+    title: Posts[ 0 ].name,
+    authors: (() => Posts[ 0 ].authors.map(author => ({ name: author.name, url: author.link })))()
+
+}
+
+<Header title={Posts[ 0 ].name} authors={ Posts[ 0 ].authors } id={Posts[ 0 ].id} />
+
+In the dynamic landscape of technology, APIs have emerged as the linchpin connecting diverse applications and services, fostering seamless communication and data exchange.
+Among a myriad of APIs avaliable, Wolfram's stands out as a robust gateway to a wealth of compuatational knowledge and sophisticated algorithms.
+
+Wolfram, known for its groundbreaking Mathematica software, as well as the very helpful Wolfram|Alpha, has extended its reach into the realm of APIs via wolfram cloud, offering developers and enthusiats a powerful toolkit to integrate cutting-edge computational capabilities into their applications.
+From advanced data analysis to natural language understand and expansive knowledge databases, Wolfram's APIs open doors to a vast ecosystem of possibilities. 
+
+Here, we will be creating a astronomy API.
+
+```typescript
+export const HelloWorld = (p: string) => {
+    /* print out hello message to p, person. */
+    console.log(`Hello, ${p}!`)
+}
+```
+
+TODO:
+- Finish this blog post (too, obv)

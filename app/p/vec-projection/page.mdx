@@ -1,0 +1,634 @@
+import '@/styles/extended.css';
+import '@/global.css';
+import '@/p/post.css';
+
+import 'katex/dist/katex.css';
+
+import Posts from "@/components/dom/articles";
+import Header from '@/components/blog/Header';
+import Split from '@/components/blog/Split';
+
+export const meta = {
+    title: Posts[ 1 ].name,
+    authors: (() => Posts[ 1 ].authors.map(author => ({ name: author.name, url: author.link })))()
+
+}
+
+<Header title={ Posts[ 1 ].name } authors={ Posts[ 1 ].authors } id={Posts[ 1 ].id} />
+
+You, and I see in 2D, yet we live in a 3D space. As we percieve objects in a 3D space we only are able to see the 2D face that is, well, facing towards us. 
+Cameras attempt to mimic our eyes and capture what we see into a more permanent form, but how can we simulate that? How can games, graphics, AR/VR, etc. see a 2D perspective in a 3D space?
+
+There are some different ways to tackle this problem, that being, matrix projection approach and the plane/projection approach. Here I'll be covering the latter.
+
+This problem is assuming that there is a camera, floating around at some random coordinate point $\vec{c} = (c_x,c_y,c_z)$. This camera is oriented around a [3D spherical plane](https://en.wikipedia.org/wiki/Spherical_coordinate_system) *(for some context, when referring to angles, mathematical convention is used.)* where the camera is always facing toward the origin.
+
+So, when the camera is *lets say,* at the point $(2 \hat{i}, 3 \hat{j}, 1 \hat{k})$, represented by the vector $\vec{c}$. There is also another vector, $\vec{v}$ on this place, coming from the origin to the point $(1 \hat{i}, 1 \hat{j}, 1 \hat{k})$. So, given that the camera is $\vec{c}$ what would the vector, $\vec{v}$ look like from the position of the camera?
+
+Here is a representation of the two vectors, note that they are depicted seperately for simplicity, in actuality these lie on the same plane:
+
+<Split>
+    <div className="flex flex-col justify-center items-center">
+        $$
+        \vec{v} = \left[ {\begin{array}{c} 1 \\ 1 \\ 1 \\ \end{array} } \right]
+        $$
+
+        <div id="tikzjax">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={202.281}
+                height={178.169}
+                viewBox="-72 -72 151.71 133.627"
+            >
+                <g
+                fill="currentColor"
+                stroke="currentColor"
+                strokeMiterlimit={10}
+                strokeWidth={0.4}
+                >
+                <g strokeWidth={0.8}>
+                    <path fill="none" d="m-6.81 13.024-42.142 36.497" />
+                    <path
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={0.64}
+                    d="M-46.411 50.072c-.61-.505-2.456-.453-2.836-.296.21-.354.525-2.174.112-2.849"
+                    />
+                    <text
+                    x={-6.81}
+                    y={13.024}
+                    stroke="none"
+                    fontFamily="cmmi10"
+                    fontSize={10}
+                    transform="translate(-52.127 45)"
+                    >
+                    {"x"}
+                    </text>
+                </g>
+                <g strokeWidth={0.8}>
+                    <path fill="none" d="m-6.81 13.024 73.24 21.143" />
+                    <path
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={0.64}
+                    d="M65.509 31.736c-.092.785.958 2.306 1.296 2.539-.41.017-2.109.744-2.45 1.457"
+                    />
+                    <text
+                    x={-6.81}
+                    y={13.024}
+                    stroke="none"
+                    fontFamily="cmmi10"
+                    fontSize={10}
+                    transform="translate(77.656 29.378)"
+                    >
+                    {"y"}
+                    </text>
+                </g>
+                <g strokeWidth={0.8}>
+                    <path fill="none" d="M-6.81 13.024v-73.213" />
+                    <path
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={0.64}
+                    d="M-8.89-58.629c.78-.13 1.95-1.56 2.08-1.95.13.39 1.3 1.82 2.08 1.95"
+                    />
+                    <text
+                    x={-6.81}
+                    y={13.024}
+                    stroke="none"
+                    fontFamily="cmmi10"
+                    fontSize={10}
+                    transform="translate(-2.545 -77.656)"
+                    >
+                    {"z"}
+                    </text>
+                </g>
+                <g fill="red" stroke="red" strokeWidth={1.2}>
+                    <path fill="none" d="M-6.81 13.024 7.02-7.445" />
+                    <path
+                    stroke="none"
+                    d="M8.812-10.096 3.824-7.287l3.196-.158L8.067-4.42"
+                    />
+                </g>
+                <path
+                    fill="none"
+                    stroke="red"
+                    strokeDasharray="3.0,3.0"
+                    strokeWidth={0.8}
+                    d="m-6.81 13.024 15.622 29.15m0 0v-52.27"
+                />
+                <text
+                    x={-6.81}
+                    y={13.024}
+                    stroke="none"
+                    strokeWidth={0.8}
+                    fontFamily="cmmi10"
+                    fontSize={10}
+                    transform="translate(-6.386 25.487)"
+                >
+                    {"\xB5"}
+                </text>
+                <path
+                    fill="none"
+                    strokeWidth={0.8}
+                    d="M-21.748 25.961c6.861 1.98 15.019 2.517 22.67 1.492"
+                />
+                <text
+                    x={-6.81}
+                    y={13.024}
+                    stroke="none"
+                    strokeWidth={0.8}
+                    fontFamily="cmmi10"
+                    fontSize={10}
+                    transform="translate(6.692 -24.06)"
+                >
+                    {"\xC1"}
+                </text>
+                <path
+                    fill="none"
+                    strokeWidth={0.8}
+                    d="M-6.81-12.849C-4.76-9.023-2.792-2.625-1.342 4.93"
+                />
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <div className="flex flex-col justify-center items-center">
+        $$
+        \vec{c} = \left[ {\begin{array}{c} c_x \\ c_y \\ c_z \\ \end{array} } \right]
+        $$
+
+        <div id="tikzjax">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={252.138}
+                height={202.141}
+                viewBox="-72 -72 189.104 151.606"
+            >
+                <g
+                fill="currentColor"
+                stroke="currentColor"
+                strokeMiterlimit={10}
+                strokeWidth={0.4}
+                >
+                <g strokeWidth={0.8}>
+                    <path fill="none" d="m-3.77 13.024-42.142 36.497" />
+                    <path
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={0.64}
+                    d="M-43.37 50.072c-.61-.505-2.457-.453-2.836-.296.21-.354.524-2.174.112-2.849"
+                    />
+                    <text
+                    x={-3.769}
+                    y={13.024}
+                    stroke="none"
+                    fontFamily="cmmi10"
+                    fontSize={10}
+                    transform="translate(-52.127 45)"
+                    >
+                    {"x"}
+                    </text>
+                </g>
+                <g strokeWidth={0.8}>
+                    <path fill="none" d="m-3.77 13.024 73.241 21.143" />
+                    <path
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={0.64}
+                    d="M68.55 31.736c-.092.785.957 2.306 1.296 2.539-.41.017-2.11.744-2.45 1.457"
+                    />
+                    <text
+                    x={-3.769}
+                    y={13.024}
+                    stroke="none"
+                    fontFamily="cmmi10"
+                    fontSize={10}
+                    transform="translate(77.656 29.378)"
+                    >
+                    {"y"}
+                    </text>
+                </g>
+                <g strokeWidth={0.8}>
+                    <path fill="none" d="M-3.77 13.024v-73.213" />
+                    <path
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={0.64}
+                    d="M-5.85-58.629c.78-.13 1.95-1.56 2.08-1.95.13.39 1.3 1.82 2.08 1.95"
+                    />
+                    <text
+                    x={-3.769}
+                    y={13.024}
+                    stroke="none"
+                    fontFamily="cmmi10"
+                    fontSize={10}
+                    transform="translate(-2.545 -77.656)"
+                    >
+                    {"z"}
+                    </text>
+                </g>
+                <path
+                    fill="#ff8000"
+                    fillOpacity={0.2}
+                    strokeOpacity={0.2}
+                    d="m-19.391-53.088 73.923 95.262-42.68 36.962-73.922-95.262Z"
+                />
+                <g fill="#ff0" stroke="#ff0" strokeWidth={1.2}>
+                    <path fill="none" d="m-3.018 12.426 63.511-50.542" />
+                    <path
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={0.96}
+                    d="M.078 13.234c-.723-.652-2.996-.682-3.472-.509.276-.424.757-2.646.284-3.497"
+                    />
+                    <path
+                    fill="none"
+                    d="M65-41.703a2.88 2.88 0 1 0-4.507 3.587A2.88 2.88 0 0 0 65-41.703Zm-2.253 1.793"
+                    />
+                    <g fill="currentColor" stroke="none">
+                    <text
+                        x={-3.769}
+                        y={13.024}
+                        fontFamily="cmr10"
+                        fontSize={10}
+                        transform="translate(73.172 -61.894)"
+                    >
+                        {"("}
+                    </text>
+                    <text
+                        x={0.12}
+                        y={13.024}
+                        fontFamily="cmmi10"
+                        fontSize={10}
+                        transform="translate(73.172 -61.894)"
+                    >
+                        {"c"}
+                    </text>
+                    <text
+                        x={4.447}
+                        y={14.524}
+                        fontFamily="cmmi7"
+                        fontSize={7}
+                        transform="translate(73.172 -61.894)"
+                    >
+                        {"x"}
+                    </text>
+                    <text
+                        x={9.482}
+                        y={13.024}
+                        fontFamily="cmmi10"
+                        fontSize={10}
+                        transform="translate(73.172 -61.894)"
+                    >
+                        {";"}
+                    </text>
+                    <text
+                        x={13.926}
+                        y={13.024}
+                        fontFamily="cmmi10"
+                        fontSize={10}
+                        transform="translate(73.172 -61.894)"
+                    >
+                        {"c"}
+                    </text>
+                    <text
+                        x={18.254}
+                        y={14.524}
+                        fontFamily="cmmi7"
+                        fontSize={7}
+                        transform="translate(73.172 -61.894)"
+                    >
+                        {"y"}
+                    </text>
+                    <text
+                        x={23.061}
+                        y={13.024}
+                        fontFamily="cmmi10"
+                        fontSize={10}
+                        transform="translate(73.172 -61.894)"
+                    >
+                        {";"}
+                    </text>
+                    <text
+                        x={27.505}
+                        y={13.024}
+                        fontFamily="cmmi10"
+                        fontSize={10}
+                        transform="translate(73.172 -61.894)"
+                    >
+                        {"c"}
+                    </text>
+                    <text
+                        x={31.833}
+                        y={14.524}
+                        fontFamily="cmmi7"
+                        fontSize={7}
+                        transform="translate(73.172 -61.894)"
+                    >
+                        {"z"}
+                    </text>
+                    <text
+                        x={36.44}
+                        y={13.024}
+                        fontFamily="cmr10"
+                        fontSize={10}
+                        transform="translate(73.172 -61.894)"
+                    >
+                        {")"}
+                    </text>
+                    </g>
+                </g>
+                </g>
+            </svg>
+        </div>
+    </div>
+</Split>
+
+The little orange rectangle depicted in the figure on the right is a representation of the plane of the camera, that is, a flat ground where an arrow straight to the point $\vec{c}$ would be perpendicular ($\perp$, i.e. $90\deg$ from the plane) to said ground. <sup>(note: this is also known as a normal vector, $\vec{n}$)</sup>
+
+We now need to normalize the vector $\vec{c}$ so that it matches up with the height of $\vec{v}$ on the new plane (essentially making a right-angle triangle on the new plane), to do this we have to project $\vec{v}$ on this plane by calculating $proj_{\vec{c}}(\vec{v})$ (the projection of $\vec{v}$ w.r.t<sup><a href="#footer">[1]</a></sup>/onto $\vec{c}$). In order to calculate this we can simply follow the formula as such:
+
+$$
+proj_{\vec{c}}(\vec{v})=(\frac{\vec{v}\cdot\vec{c}}{\vec{c}\cdot\vec{c}})\vec{c}
+$$
+<div id="tikzjax">
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={251.872}
+        height={202.141}
+        viewBox="-72 -72 188.904 151.606"
+    >
+        <g
+        fill="currentColor"
+        stroke="currentColor"
+        strokeMiterlimit={10}
+        strokeWidth={0.4}
+        >
+        <g strokeWidth={0.8}>
+            <path fill="none" d="m-3.77 13.024-42.142 36.497" />
+            <path
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={0.64}
+            d="M-43.37 50.072c-.61-.505-2.457-.453-2.836-.296.21-.354.524-2.174.112-2.849"
+            />
+            <text
+            x={-3.769}
+            y={13.024}
+            stroke="none"
+            fontFamily="cmmi10"
+            fontSize={10}
+            transform="translate(-52.127 45)"
+            >
+            {"x"}
+            </text>
+        </g>
+        <g strokeWidth={0.8}>
+            <path fill="none" d="m-3.77 13.024 73.241 21.143" />
+            <path
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={0.64}
+            d="M68.55 31.736c-.092.785.957 2.306 1.296 2.539-.41.017-2.11.744-2.45 1.457"
+            />
+            <text
+            x={-3.769}
+            y={13.024}
+            stroke="none"
+            fontFamily="cmmi10"
+            fontSize={10}
+            transform="translate(77.656 29.378)"
+            >
+            {"y"}
+            </text>
+        </g>
+        <g strokeWidth={0.8}>
+            <path fill="none" d="M-3.77 13.024v-73.213" />
+            <path
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={0.64}
+            d="M-5.85-58.629c.78-.13 1.95-1.56 2.08-1.95.13.39 1.3 1.82 2.08 1.95"
+            />
+            <text
+            x={-3.769}
+            y={13.024}
+            stroke="none"
+            fontFamily="cmmi10"
+            fontSize={10}
+            transform="translate(-2.545 -77.656)"
+            >
+            {"z"}
+            </text>
+        </g>
+        <path
+            fill="#ff8000"
+            fillOpacity={0.2}
+            strokeOpacity={0.2}
+            d="m-19.391-53.088 73.923 95.262-42.68 36.962-73.922-95.262Z"
+        />
+        <g fill="red" stroke="red" strokeWidth={1.2}>
+            <path fill="none" d="M-3.77 13.024 10.06-7.445" />
+            <path
+            stroke="none"
+            d="M11.852-10.096 6.865-7.287l3.196-.158 1.046 3.024"
+            />
+            <g stroke="none" fontSize={10}>
+            <text
+                x={-3.769}
+                y={13.024}
+                fontFamily="cmr10"
+                transform="translate(-21.045 -29.553)"
+            >
+                {"("}
+            </text>
+            <text
+                x={0.12}
+                y={13.024}
+                fontFamily="cmmi10"
+                transform="translate(-21.045 -29.553)"
+            >
+                {"x;"}
+            </text>
+            <text
+                x={10.279}
+                y={13.024}
+                fontFamily="cmmi10"
+                transform="translate(-21.045 -29.553)"
+            >
+                {"y"}
+            </text>
+            <text
+                x={15.541}
+                y={13.024}
+                fontFamily="cmmi10"
+                transform="translate(-21.045 -29.553)"
+            >
+                {";"}
+            </text>
+            <text
+                x={19.985}
+                y={13.024}
+                fontFamily="cmmi10"
+                transform="translate(-21.045 -29.553)"
+            >
+                {"z"}
+            </text>
+            <text
+                x={25.076}
+                y={13.024}
+                fontFamily="cmr10"
+                transform="translate(-21.045 -29.553)"
+            >
+                {")"}
+            </text>
+            </g>
+        </g>
+        <path
+            fill="none"
+            stroke="red"
+            strokeDasharray="3.0,3.0"
+            strokeWidth={0.8}
+            d="m-3.77 13.024 15.622 29.15m0 0v-52.27"
+        />
+        <g fill="#ff0" stroke="#ff0" strokeWidth={0.8}>
+            <path fill="none" d="m-3.214 12.582 64.427-51.271" />
+            <path
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={0.64}
+            d="M-.698 13.238c-.587-.53-2.435-.554-2.82-.413.223-.345.614-2.15.23-2.842"
+            />
+            <path
+            fill="none"
+            d="M65.156-41.827a2.52 2.52 0 1 0-3.943 3.138 2.52 2.52 0 0 0 3.943-3.138Zm-1.971 1.569"
+            />
+            <g fill="currentColor" stroke="none">
+            <text
+                x={-3.769}
+                y={13.024}
+                fontFamily="cmr10"
+                fontSize={10}
+                transform="translate(72.972 -61.694)"
+            >
+                {"("}
+            </text>
+            <text
+                x={0.12}
+                y={13.024}
+                fontFamily="cmmi10"
+                fontSize={10}
+                transform="translate(72.972 -61.694)"
+            >
+                {"c"}
+            </text>
+            <text
+                x={4.447}
+                y={14.524}
+                fontFamily="cmmi7"
+                fontSize={7}
+                transform="translate(72.972 -61.694)"
+            >
+                {"x"}
+            </text>
+            <text
+                x={9.482}
+                y={13.024}
+                fontFamily="cmmi10"
+                fontSize={10}
+                transform="translate(72.972 -61.694)"
+            >
+                {";"}
+            </text>
+            <text
+                x={13.926}
+                y={13.024}
+                fontFamily="cmmi10"
+                fontSize={10}
+                transform="translate(72.972 -61.694)"
+            >
+                {"c"}
+            </text>
+            <text
+                x={18.254}
+                y={14.524}
+                fontFamily="cmmi7"
+                fontSize={7}
+                transform="translate(72.972 -61.694)"
+            >
+                {"y"}
+            </text>
+            <text
+                x={23.061}
+                y={13.024}
+                fontFamily="cmmi10"
+                fontSize={10}
+                transform="translate(72.972 -61.694)"
+            >
+                {";"}
+            </text>
+            <text
+                x={27.505}
+                y={13.024}
+                fontFamily="cmmi10"
+                fontSize={10}
+                transform="translate(72.972 -61.694)"
+            >
+                {"c"}
+            </text>
+            <text
+                x={31.833}
+                y={14.524}
+                fontFamily="cmmi7"
+                fontSize={7}
+                transform="translate(72.972 -61.694)"
+            >
+                {"z"}
+            </text>
+            <text
+                x={36.44}
+                y={13.024}
+                fontFamily="cmr10"
+                fontSize={10}
+                transform="translate(72.972 -61.694)"
+            >
+                {")"}
+            </text>
+            </g>
+        </g>
+        </g>
+    </svg>
+</div>
+
+Please take into account that this diagram is *not* the best representation of the described behaviour, but it is mathematically the same. Considering that at this point we will now have the original vector, and a projection of $\vec{v}$ onto $\vec{c}$, we can calculate the real projection, $\vec{p}$, which will be the subtraction between the two vectors as such: 
+$$
+\vec{p}=\vec{v}-proj_{\vec{c}}(\vec{v})
+$$
+After the projection is found a scalar is applied to it determined by the distance the camera is away from the vector in focus. The scaling formula is the following: 
+$$
+\vec{p}_v = \begin{cases} 
+               \frac{1}{d}\cdot\vec{p} & d\neq 0 \\
+               0 & d=0
+            \end{cases}
+$$
+as $\lim\limits_{d \to 0}=\infty$, since $\infty$ is computationally impossible $\vec{p}_v$ is set as 0 instead. 
+
+(i.e. cannot divide by zero)
+
+<footer id="footer" className="mt-12 text-gray-500">
+    -----
+    1. With Respect To — shorthand
+</footer>

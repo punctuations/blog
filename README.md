@@ -1,2 +1,3 @@
 # blog
-blog
+
+see what im up to?
