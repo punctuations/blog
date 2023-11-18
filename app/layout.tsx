@@ -1,4 +1,3 @@
-import GoogleAnalytics from "@/components/dom/GoogleAnalytics";
 import { Layout } from "@/components/dom/Layout";
 import "@/global.css";
 import { Metadata } from "next";
@@ -22,7 +21,6 @@ export default function RootLayout({ children }) {
       		*/}
 			<head />
 			<body>
-				{TRACKING_ID ? <GoogleAnalytics ga_id={TRACKING_ID} /> : null}
 				<Layout>{children}</Layout>
 			</body>
 		</html>

@@ -4,7 +4,7 @@ import remarkMath from "remark-math";
 
 import nextMDX from "@next/mdx";
 import bundler from "@next/bundle-analyzer";
-import withPWAInit from "@ducanh2912/next-pwa";
+// import withPWAInit from "@ducanh2912/next-pwa";
 
 import * as fs from "fs";
 
@@ -25,14 +25,14 @@ const withBundleAnalyzer = bundler({
 	enabled: process.env.ANALYZE === "true",
 });
 
-/**
- * A fork of 'next-pwa' that has app directory support
- * @see https://github.com/shadowwalker/next-pwa/issues/424#issuecomment-1332258575
- */
-const withPWA = withPWAInit({
-	dest: "public",
-	// disable: process.env.NODE_ENV === "development",
-});
+// /**
+//  * A fork of 'next-pwa' that has app directory support
+//  * @see https://github.com/shadowwalker/next-pwa/issues/424#issuecomment-1332258575
+//  */
+// const withPWA = withPWAInit({
+// 	dest: "public",
+// 	disable: process.env.NODE_ENV === "development",
+// });
 
 const nextConfig = {
 	// Configure `pageExtensions` to include MDX files
@@ -88,7 +88,7 @@ const KEYS_TO_OMIT = [
 ];
 
 export default (_phase, { defaultConfig }) => {
-	const plugins = [[withMDX], [withPWA], [withBundleAnalyzer, {}]];
+	const plugins = [[withMDX], [withBundleAnalyzer, {}]];
 
 	const wConfig = plugins.reduce((acc, [plugin, config]) => plugin({ ...acc, ...config }), {
 		...defaultConfig,
