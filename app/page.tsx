@@ -108,7 +108,7 @@ export default function Page() {
 
 			<div className='fixed bottom-0 left-0 w-full h-full fade z-50 pointer-events-none' />
 
-			<div className='fixed z-20 w-full h-full bg-black/70' />
+			<div className='fixed z-20 w-full h-full bg-black/80' />
 			<div className='z-10 fixed w-full h-full flex justify-center items-center'>
 				<Background />
 			</div>
