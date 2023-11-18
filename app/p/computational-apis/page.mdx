@@ -21,12 +21,73 @@ From advanced data analysis to natural language understand and expansive knowled
 
 Here, we will be creating a astronomy API.
 
-```typescript
-export const HelloWorld = (p: string) => {
-    /* print out hello message to p, person. */
-    console.log(`Hello, ${p}!`)
+To begin, the API is broken up into three parts:
+1. Deployment
+2. Data
+3. Serialization
+
+### Deployment
+
+Deployment of APIs is done via [wolfram cloud](https://wolframcloud.com), and is accomplished by using the [`CloudDeploy[]`](https://reference.wolfram.com/language/ref/CloudDeploy.html) as well as the [`APIFunction`](https://reference.wolfram.com/language/ref/APIFunction.html) function.
+
+To get started with deploying a basic API we can use the following:
+```wolfram
+CloudDeploy[
+ APIFunction[{"date" ->  "String" -> ""}, 
+  ExportString[{"name"-> "John", "name"-> "Doe"}, "JSON", "Compact"->True] &, "String"], "api/astro", 
+ Permissions -> "Public"]
+```
+
+Breaking this down, here we are taking in a parameter of `date`, such that the request url would be `https://example.com/api/atro?date="November 17 2023"`.
+It should also be noted that there is a default value for `date` if it is not provided, which is a empty string. The date can be accessed using #date afterwards.
+In this example, making a request would give back the following response:
+```json title="GET https://example.com/api/atro?date=November 17 2023"
+{
+    "name": "Matt",
+    "date": "November 17 2023"
 }
 ```
 
-TODO:
-- Finish this blog post (too, obv)
+But since we have a static dataset there will be no change with a change in the `date` parameter (i.e. `date` is not being utilized)
+
+We can fix this by moving our expressing into a function!
+
+### Data
+
+To expand and allow this to have more functionality we can move the response of the api into its own function, although it should be noted that if a parameter is passed in and the function is __not__ static in nature then function will have to be evaluated at runtime using [`:=`](https://reference.wolfram.com/language/ref/SetDelayed.html).
+
+If we wanted to return the name of the current (or past) moon phase having taken a date as the parameter we could move the computation into its own function and call the [`MoonPhase`](https://reference.wolfram.com/language/ref/MoonPhase.html) function.
+
+```wolfram
+handleParse[date_] := If[date == "", {"state" -> MoonPhase["Name"] @ "Name"}, {"state"-> MoonPhase[FromDateString[date], "Name"] @ "Name"}]
+
+CloudDeploy[
+ APIFunction[{"date" ->  "String" -> ""}, 
+  ExportString[handleParse[#date], "JSON", "Compact"->True] &, "String"], "api/astro", 
+ Permissions -> "Public"]
+```
+
+Having the date as an optional parameter means that we must also account for any situation where the `date` is not provided, and thus we have to seperate `handleParse` function into two conditions.
+
+An example query to the endpoint now would give back the following:
+```json title="GET https://example.com/api/atro?date=November 1 2001"
+{
+    "state": "full moon"
+}
+```
+
+Similarly, if we were to query the endpoint __without__ a date included it would simply give back the moon state at the current date.
+
+### Serialization
+
+The [`ExportString`](https://reference.wolfram.com/language/ref/ExportString.html?q=ExportString) function wrapping the data is key to have the API to work correctly (assuming you want a JSON response), this function speicifies the payload, the format, and the (optional) compact parameter (which just makes the JSON compact vs pretty).
+Therefore, all the data must also be in a format where no further evaluation is needed (at least when it reaches this serialization step), failure to do so will result in failure at evaluation or on the endpoint. (tl;dr: watch the data-types)
+
+This step also cannot be skipped either, as the data structure for wolfram objects vs. json structure is __quite__ different. (Unless you just want a static string that is.)
+
+
+### Conclusion
+
+All-in-all, utilizing wolfram's abilities to make difficult computational apis is a great solution, and, of course, this can be expanded to a lot more than just atronomy.
+
+Many cool projects pop-up all the time over on the [Wolfram Community](https://community.wolfram.com), and is a great source of inspiration for anyone looking!
