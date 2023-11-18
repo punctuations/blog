@@ -32,7 +32,7 @@ const Dots = (props) => {
 	return (
 		<>
 			<EffectComposer>
-				<ASCII characters=' .QWERTYUIOPASDFGHJKLZXCVBNM/#•' />
+				<ASCII fontSize={64} characters=' .QWERTYUIOPASDFGHJKLZXCVBNM/#•' />
 				<Bloom luminanceThreshold={0.65} luminanceSmoothing={0.1} height={300} />
 				<Noise opacity={1} />
 			</EffectComposer>
