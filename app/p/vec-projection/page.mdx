@@ -9,12 +9,12 @@ import Header from '@/components/blog/Header';
 import Split from '@/components/blog/Split';
 
 export const meta = {
-    title: Posts[ 1 ].name,
-    authors: (() => Posts[ 1 ].authors.map(author => ({ name: author.name, url: author.link })))()
+    title: Posts[ 0 ].name,
+    authors: (() => Posts[ 0 ].authors.map(author => ({ name: author.name, url: author.link })))()
 
 }
 
-<Header title={ Posts[ 1 ].name } authors={ Posts[ 1 ].authors } id={Posts[ 1 ].id} />
+<Header title={ Posts[ 0 ].name } authors={ Posts[ 0 ].authors } id={Posts[ 0 ].id} />
 
 You, and I see in 2D, yet we live in a 3D space. As we percieve objects in a 3D space we only are able to see the 2D face that is, well, facing towards us. 
 Cameras attempt to mimic our eyes and capture what we see into a more permanent form, but how can we simulate that? How can games, graphics, AR/VR, etc. see a 2D perspective in a 3D space?
